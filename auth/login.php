@@ -42,9 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $pdo = Database::getConnection();
 
-                // 2. Query user identity by either username or email
-                $stmt = $pdo->prepare('SELECT id, username, email, password FROM users WHERE username = :ident OR email = :ident LIMIT 1');
-                $stmt->execute([':ident' => $identifier]);
+                // 2. Query user identity by either username or email (distinct parameter names for native prepared statements)
+                $stmt = $pdo->prepare('SELECT id, username, email, password FROM users WHERE username = :ident_u OR email = :ident_e LIMIT 1');
+                $stmt->execute([
+                    ':ident_u' => $identifier,
+                    ':ident_e' => $identifier,
+                ]);
                 $user = $stmt->fetch();
 
                 // 3. Verify password hash using timing-safe password_verify()
