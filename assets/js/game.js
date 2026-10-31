@@ -35,10 +35,10 @@ class BananaGameController {
             keyButtons: document.querySelectorAll('.key-btn'),
             btnClearAnswer: document.getElementById('btn-clear-answer'),
             btnSubmitAnswer: document.getElementById('btn-submit-answer'),
+            btnNextQuestion: document.getElementById('btn-next-question'),
 
             feedbackBox: document.getElementById('feedback-box'),
             feedbackText: document.getElementById('feedback-text'),
-            btnNextQuestion: document.getElementById('btn-next-question'),
 
             gameOverCard: document.getElementById('game-over-card'),
             finalScoreVal: document.getElementById('final-score-val'),
@@ -125,7 +125,7 @@ class BananaGameController {
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 if (this.state.isAwaitingNext) {
-                    this.handleNextQuestion();
+                    this.dom.btnNextQuestion.click();
                 } else {
                     this.handleSubmitAnswer();
                 }
@@ -318,21 +318,24 @@ class BananaGameController {
         this.state.isAwaitingNext = true;
         this.state.isSubmitting = false;
 
-        // Disable keypad and input controls while showing answer result
+        // Disable keypad during result presentation
         this.dom.keyButtons.forEach(btn => btn.disabled = true);
-        this.dom.btnClearAnswer.disabled = true;
+
+        // Hide Clear and Submit buttons; Reveal the large "Next Puzzle" button right in place
+        this.dom.btnClearAnswer.style.display = 'none';
         this.dom.btnSubmitAnswer.style.display = 'none';
 
         // Update HUD score immediately
         this.dom.hudScore.textContent = result.current_score;
         this.dom.hudCorrect.textContent = result.correct_count;
 
+        // Populate feedback card
         this.dom.feedbackBox.className = 'feedback-box ' + (result.is_correct ? 'correct' : 'incorrect');
 
         if (result.is_correct) {
             this.dom.feedbackText.innerHTML = `
-                <div style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem;">🎉 Correct! Fantastic job!</div>
-                <div>The correct answer is <strong>${result.correct_solution}</strong>. You earned <strong>+10 points</strong>!</div>
+                <div style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem;">🎉 Correct! Fantastic calculation!</div>
+                <div>The correct value is <strong>${result.correct_solution}</strong>. You earned <strong>+10 points</strong>!</div>
             `;
         } else {
             this.dom.feedbackText.innerHTML = `
@@ -343,18 +346,23 @@ class BananaGameController {
 
         // Show Next button or transition to Game Over
         if (result.is_game_over) {
-            this.dom.btnNextQuestion.textContent = 'See Final Results 🏆';
-            this.dom.btnNextQuestion.style.display = 'inline-flex';
+            this.dom.btnNextQuestion.innerHTML = '🏆 See Final Results &rarr;';
+            this.dom.btnNextQuestion.style.display = 'block';
             this.dom.btnNextQuestion.onclick = () => {
                 this.showGameOver(result);
             };
         } else {
-            this.dom.btnNextQuestion.textContent = 'Next Puzzle →';
-            this.dom.btnNextQuestion.style.display = 'inline-flex';
+            this.dom.btnNextQuestion.innerHTML = '🚀 Next Puzzle &rarr;';
+            this.dom.btnNextQuestion.style.display = 'block';
             this.dom.btnNextQuestion.onclick = () => {
                 this.handleNextQuestion();
             };
         }
+
+        // Smoothly bring the feedback and next action into view
+        try {
+            this.dom.feedbackBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (_) {}
     }
 
     /**
@@ -375,6 +383,10 @@ class BananaGameController {
         this.dom.finalScoreVal.textContent = summary.final_score ?? summary.score ?? 0;
         this.dom.finalAccVal.textContent = (summary.accuracy ?? Math.round(((summary.correct_answers ?? summary.correct_count) / summary.total_questions) * 100)) + '%';
         this.dom.finalCorrectVal.textContent = summary.correct_answers ?? summary.correct_count ?? 0;
+
+        try {
+            this.dom.gameOverCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (_) {}
     }
 
     /**
@@ -403,14 +415,18 @@ class BananaGameController {
             btn.disabled = false;
             btn.classList.remove('active');
         });
+
+        // Restore action buttons
+        this.dom.btnClearAnswer.style.display = 'inline-flex';
         this.dom.btnClearAnswer.disabled = false;
-        this.dom.btnSubmitAnswer.disabled = false;
+
         this.dom.btnSubmitAnswer.style.display = 'inline-flex';
+        this.dom.btnSubmitAnswer.disabled = false;
         this.dom.btnSubmitAnswer.textContent = 'Submit Answer →';
 
+        this.dom.btnNextQuestion.style.display = 'none';
         this.dom.feedbackBox.className = 'feedback-box';
         this.dom.feedbackBox.style.display = 'none';
-        this.dom.btnNextQuestion.style.display = 'none';
     }
 
     /**

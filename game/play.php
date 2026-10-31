@@ -45,7 +45,7 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- Active Puzzle Card -->
     <div class="puzzle-card card" id="puzzle-card">
         <!-- API Loading Indicator -->
-        <div id="puzzle-loading" style="display: none; padding: 3rem 1rem;">
+        <div id="puzzle-loading" style="display: none; padding: 2.5rem 1rem;">
             <div class="spinner"></div>
             <p style="color: var(--text-muted); font-weight: 600;">Fetching puzzle from official Banana API...</p>
         </div>
@@ -70,13 +70,13 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Answer Input Controls -->
             <div id="input-controls">
-                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0.35rem;">
                     Find the missing number for the final equation (<strong>0–9</strong>):
                 </p>
 
-                <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                     <input type="text" id="answer-display" readonly class="form-input" 
-                           style="width: 100px; text-align: center; font-size: 1.8rem; font-weight: 800; color: var(--accent-dark); background-color: var(--primary-light); border-color: var(--primary);" 
+                           style="width: 90px; text-align: center; font-size: 1.7rem; font-weight: 800; color: var(--accent-dark); background-color: var(--primary-light); border-color: var(--primary); padding: 0.35rem;" 
                            placeholder="?" aria-label="Selected Answer">
                 </div>
 
@@ -94,22 +94,24 @@ require_once __DIR__ . '/../includes/header.php';
                     <button type="button" class="key-btn" data-val="0">0</button>
                 </div>
 
-                <div class="answer-actions">
+                <!-- Interactive Feedback Box (Placed immediately below keypad for optimal visibility) -->
+                <div class="feedback-box" id="feedback-box">
+                    <div id="feedback-text"></div>
+                </div>
+
+                <!-- Action Buttons Container -->
+                <div class="answer-actions" id="answer-actions" style="margin-top: 1rem;">
                     <button type="button" class="btn btn-secondary" id="btn-clear-answer" style="flex: 1;">
                         Clear
                     </button>
                     <button type="button" class="btn btn-primary" id="btn-submit-answer" style="flex: 2;">
                         Submit Answer &rarr;
                     </button>
+                    <!-- Next Question Action (Appears in place of submit when answered) -->
+                    <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-next-question" style="display: none; animation: pulse 1.5s infinite;">
+                        Next Puzzle &rarr;
+                    </button>
                 </div>
-            </div>
-
-            <!-- Interactive Feedback Box -->
-            <div class="feedback-box" id="feedback-box">
-                <div id="feedback-text"></div>
-                <button type="button" class="btn btn-primary" id="btn-next-question" style="margin-top: 1rem; display: none;">
-                    Next Puzzle &rarr;
-                </button>
             </div>
         </div>
     </div>
