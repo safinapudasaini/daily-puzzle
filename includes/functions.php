@@ -45,7 +45,7 @@ function base_url(string $path = ''): string
     
     // Check known first-level subdirectories of the application
     $subdirs = ['/api/', '/auth/', '/dashboard/', '/game/', '/includes/', '/tests/'];
-    $projectRoot = '';
+    $projectRoot = null;
 
     foreach ($subdirs as $subdir) {
         $pos = strpos($scriptName, $subdir);
@@ -55,8 +55,9 @@ function base_url(string $path = ''): string
         }
     }
 
-    if ($projectRoot === '') {
-        $projectRoot = rtrim(dirname($scriptName), '/\\');
+    if ($projectRoot === null) {
+        $dir = dirname($scriptName);
+        $projectRoot = ($dir === '/' || $dir === '\\' || $dir === '.') ? '' : rtrim($dir, '/\\');
     }
 
     $projectRoot = rtrim($projectRoot, '/');
@@ -190,3 +191,4 @@ function redirect(string $path): void
     header('Location: ' . $path);
     exit;
 }
+
